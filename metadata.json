@@ -1,0 +1,5 @@
+{
+  "name": "Crossyfluffle",
+  "description": "An isometric arcade game where you help Fluffle the bunny cross busy roads, dodge traffic, and reach the finish line. Includes real-time movement logging and classic arcade mechanics.",
+  "requestFramePermissions": []
+}
