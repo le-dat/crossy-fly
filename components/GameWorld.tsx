@@ -1,10 +1,9 @@
-
-import React from 'react';
-import { LANES_CONFIG, COLORS } from '../constants';
-import { Car } from '../types';
+import React from "react";
+import { LANES_CONFIG, COLORS } from "../constants";
+import { Car, Vector2 } from "../types";
 
 interface GameWorldProps {
-  playerPos: { x: number; y: number };
+  playerPos: Vector2;
   cars: Car[];
   isGameOver: boolean;
 }
@@ -16,21 +15,20 @@ const GameWorld: React.FC<GameWorldProps> = ({ playerPos, cars, isGameOver }) =>
         {LANES_CONFIG.map((lane, idx) => (
           <div
             key={lane.id}
-            className={`relative w-[1200px] h-16 mb-0 ${
-              lane.type === 'GRASS' ? 'bg-[#a3e635]' : 'bg-[#334155]'
-            } border-b border-black/10`}
-            style={{ 
+            className="relative w-[1200px] h-16 mb-0 border-b border-black/10"
+            style={{
+              backgroundColor: lane.type === "GRASS" ? COLORS.GRASS : COLORS.ROAD,
               transform: `translateZ(${idx * 0.1}px)`,
-              boxShadow: lane.type === 'ROAD' ? 'inset 0 10px 15px -3px rgba(0,0,0,0.3)' : 'none'
+              boxShadow: lane.type === "ROAD" ? "inset 0 10px 15px -3px rgba(0,0,0,0.3)" : "none",
             }}
           >
             {/* Lane Details */}
-            {lane.type === 'ROAD' && (
+            {lane.type === "ROAD" && (
               <div className="absolute top-1/2 left-0 w-full h-[2px] border-t-2 border-dashed border-white/20 -translate-y-1/2" />
             )}
 
             {/* Static decorations (Trees on Grass) */}
-            {lane.type === 'GRASS' && idx % 3 === 0 && (
+            {lane.type === "GRASS" && idx % 3 === 0 && (
               <>
                 <Tree x={5} />
                 <Tree x={25} />
@@ -40,23 +38,29 @@ const GameWorld: React.FC<GameWorldProps> = ({ playerPos, cars, isGameOver }) =>
             )}
 
             {/* Cars */}
-            {cars.filter(c => c.laneIndex === idx).map(car => (
-              <div
-                key={car.id}
-                className="absolute top-1/2 -translate-y-1/2 transition-transform duration-300"
-                style={{ left: `${car.x}%`, transform: `translateY(-50%)` }}
-              >
-                <CarSprite type={car.type} color={car.color} flipped={LANES_CONFIG[idx].speed! < 0} />
-              </div>
-            ))}
+            {cars
+              .filter((c) => c.laneIndex === idx)
+              .map((car) => (
+                <div
+                  key={car.id}
+                  className="absolute top-1/2 -translate-y-1/2 transition-transform duration-300"
+                  style={{ left: `${car.x}%`, transform: `translateY(-50%)` }}
+                >
+                  <CarSprite
+                    type={car.type}
+                    color={car.color}
+                    flipped={(LANES_CONFIG[idx].speed ?? 0) < 0}
+                  />
+                </div>
+              ))}
 
             {/* Player */}
             {playerPos.y === idx && (
               <div
                 className="absolute top-1/2 -translate-y-1/2 z-50 transition-all duration-150"
-                style={{ 
+                style={{
                   left: `${(playerPos.x / 10) * 100}%`,
-                  transform: `translateY(-50%) translateZ(10px) ${isGameOver ? 'rotateX(90deg)' : ''}` 
+                  transform: `translateY(-50%) translateZ(10px) ${isGameOver ? "rotateX(90deg)" : ""}`,
                 }}
               >
                 <FluffleSprite />
@@ -77,11 +81,18 @@ const Tree: React.FC<{ x: number }> = ({ x }) => (
   </div>
 );
 
-const CarSprite: React.FC<{ type: string; color: string; flipped: boolean }> = ({ type, color, flipped }) => {
-  const width = type === 'van' ? 'w-24' : type === 'jeep' ? 'w-20' : 'w-16';
-  const height = type === 'van' ? 'h-10' : 'h-8';
+const CarSprite: React.FC<{ type: string; color: string; flipped: boolean }> = ({
+  type,
+  color,
+  flipped,
+}) => {
+  const width = type === "van" ? "w-24" : type === "jeep" ? "w-20" : "w-16";
+  const height = type === "van" ? "h-10" : "h-8";
   return (
-    <div className={`${width} ${height} rounded-lg relative shadow-xl transform ${flipped ? 'scale-x-[-1]' : ''}`} style={{ backgroundColor: color }}>
+    <div
+      className={`${width} ${height} rounded-lg relative shadow-xl transform ${flipped ? "scale-x-[-1]" : ""}`}
+      style={{ backgroundColor: color }}
+    >
       <div className="absolute top-1 left-2 right-2 h-1/2 bg-sky-100/30 rounded-t" />
       <div className="absolute bottom-1 left-1 w-4 h-4 bg-gray-900 rounded-full" />
       <div className="absolute bottom-1 right-1 w-4 h-4 bg-gray-900 rounded-full" />
