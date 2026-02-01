@@ -6,6 +6,9 @@ import GameWorld from "./components/GameWorld";
 import LogSidebar from "./components/LogSidebar";
 import Header from "./components/Header";
 import Overlay from "./components/Overlay";
+import WalletButton from "./components/WalletButton";
+import { useWallet } from "./hooks/useWallet";
+import { useMoveRecorder } from "./hooks/useMoveRecorder";
 
 // Mobile d-pad layout: 3-col grid, null = empty spacer cell
 const MOBILE_BUTTONS: Array<{ dx: number; dy: number; d: string } | null> = [
@@ -50,6 +53,9 @@ const App: React.FC = () => {
     restartRef,
     onCollision: handleCollision,
   });
+
+  const { address, connect, provider } = useWallet();
+  useMoveRecorder({ gameState, walletAddress: address, provider, addLog });
 
   const handleMove = useCallback(
     (dx: number, dy: number) => {
@@ -115,6 +121,10 @@ const App: React.FC = () => {
       {/* Left Main Content */}
       <div className="flex-1 relative flex flex-col items-center justify-center bg-gradient-to-br from-slate-800 to-slate-950 overflow-hidden">
         <Header score={gameState.score} />
+
+        <div className="absolute top-8 right-4 z-50">
+          <WalletButton address={address} onConnect={connect} />
+        </div>
 
         <div className="relative w-full h-full flex items-center justify-center p-4">
           <GameWorld
